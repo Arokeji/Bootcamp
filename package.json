@@ -8,7 +8,7 @@
     "lint:fix": "eslint --fix .",
     "start": "ts-node-dev ./src/index.ts",
     "start:pro": "npm run build && node ./dist/index.js",
-    "precommit": "npm run lint && npm run build && npm run test",
+    "precommit": "npm run lint && npm run test && npm run build",
     "seed:team-and-player": "ts-node-dev ./src/seeds/team-and-player.seed.ts --ignore-watch",
     "build": "tsc",
     "build:swagger-json": "ts-node-dev ./src/utils/generate-swagger-json.ts --ingore-watch",

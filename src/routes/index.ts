@@ -1,6 +1,7 @@
 import express, { NextFunction, Response, Request, ErrorRequestHandler } from "express";
 import { mongoConnect } from "../domain/repositories/mongo-repository";
 import { userRouter } from "./user.routes";
+import { classroomRouter } from "./classroom.routes";
 
 export const configureRoutes = (app: any): any => {
   // Mongo connection Middleware
@@ -26,6 +27,7 @@ export const configureRoutes = (app: any): any => {
 
   // Routes set
   app.use("/user", userRouter);
+  app.use("/classroom", classroomRouter);
   app.use("/public", express.static("public"));
   app.use("/", router);
 
