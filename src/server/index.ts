@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT: string = process.env.PORT as string;
 
 // Server settings
 export const app = express();
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: `http://localhost:${PORT as string}`,
+    origin: `http://localhost:${PORT}`,
   })
 );
 

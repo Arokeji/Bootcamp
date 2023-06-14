@@ -1,8 +1,18 @@
-import express, { type NextFunction, type Response, type Request, type ErrorRequestHandler } from "express";
+import express, { NextFunction, Response, Request, ErrorRequestHandler } from "express";
+import { mongoConnect } from "../domain/repositories/mongo-repository";
+import { userRouter } from "./user.routes";
 
 export const configureRoutes = (app: any): any => {
-  // Main route
+  // Mongo connection Middleware
+  app.use(async (req: Request, res: Response, next: NextFunction) => {
+    await mongoConnect();
+    next();
+  });
+
+  // Express declaration
   const router = express.Router();
+
+  // Main route
   router.get("/", (req: Request, res: Response) => {
     res.send(`
       <h1>🏫 School Management API 🚸</h1>
@@ -15,6 +25,7 @@ export const configureRoutes = (app: any): any => {
   });
 
   // Routes set
+  app.use("/user", userRouter);
   app.use("/public", express.static("public"));
   app.use("/", router);
 
