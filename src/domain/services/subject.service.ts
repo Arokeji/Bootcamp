@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { classroomOdm } from "../odm/classroom.odm";
-import { userOdm } from "../odm/user.odm";
 import { subjectOdm } from "../odm/subject.odm";
 
-export const getClassrooms = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getSubjects = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // This action can only be performed by 🎖️ADMINS and 🎖️TEACHERS
     if (req.user.role !== "ADMIN" && req.user.role !== "TEACHER") {
@@ -15,16 +13,16 @@ export const getClassrooms = async (req: Request, res: Response, next: NextFunct
     const page = req.query.page ? parseInt(req.query.page as string) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
-    const classrooms = await classroomOdm.getAllClassrooms(page, limit);
+    const subjects = await subjectOdm.getAllSubjects(page, limit);
 
     // Total amount of elements found
-    const totalElements = await classroomOdm.getClassroomCount();
+    const totalElements = await subjectOdm.getSubjectCount();
 
     const response = {
       totalItems: totalElements,
       totalPages: Math.ceil(totalElements / limit),
       currentPage: page,
-      data: classrooms,
+      data: subjects,
     };
 
     res.json(response);
@@ -33,28 +31,22 @@ export const getClassrooms = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const getClassroomById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getSubjectById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const classroomIdToShow = req.params.id;
+    const subjectIdToShow = req.params.id;
 
-    // This action can only be performed by 🎖️ADMINS, 🎖️TEACHERS and the current classroom
+    // This action can only be performed by 🎖️ADMINS, 🎖️TEACHERS and the current subject
     if (req.user.role !== "ADMIN" && req.user.role !== "TEACHER") {
       res.status(401).json({ error: "⛔ Only Admins, Teachers can perform this action." });
       return;
     }
 
-    const classroom = await classroomOdm.getClassroomById(classroomIdToShow);
+    const subject = await subjectOdm.getSubjectById(subjectIdToShow);
 
-    if (classroom) {
-      const classroomToSend = classroom.toObject();
-
-      const students = await userOdm.getStudentsByClassroomId(classroom.id);
-      const subjects = await subjectOdm.getSubjectsByClassroomId(classroom.id);
-
-      classroomToSend.students = students;
-      classroomToSend.subjects = subjects;
-
-      res.json(classroomToSend);
+    if (subject) {
+      const temporalSubject = subject.toObject();
+      // TODO rellenar datos de clases y asignaturas
+      res.json(temporalSubject);
     } else {
       res.status(404).json({});
     }
@@ -63,7 +55,7 @@ export const getClassroomById = async (req: Request, res: Response, next: NextFu
   }
 };
 
-export const createClassroom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createSubject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // This action can only be performed by 🎖️ADMINS
     if (req.user.role !== "ADMIN") {
@@ -71,35 +63,14 @@ export const createClassroom = async (req: Request, res: Response, next: NextFun
       return;
     }
 
-    const createdClassroom = await classroomOdm.createClassroom(req.body);
-    res.status(201).json(createdClassroom);
+    const createdSubject = await subjectOdm.createSubject(req.body);
+    res.status(201).json(createdSubject);
   } catch (error) {
     next(error);
   }
 };
 
-export const deleteClassroom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    // This action can only be performed by 🎖️ADMINS
-    if (req.user.role !== "ADMIN") {
-      res.status(401).json({ error: "⛔ Only Admins can perform this action." });
-      return;
-    }
-
-    const id = req.params.id;
-
-    const classroomDeleted = await classroomOdm.deleteClassroom(id);
-    if (classroomDeleted) {
-      res.json(classroomDeleted);
-    } else {
-      res.status(404).json({});
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const updateClassroom = async (req: any, res: Response, next: NextFunction): Promise<void> => {
+export const deleteSubject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // This action can only be performed by 🎖️ADMINS
     if (req.user.role !== "ADMIN") {
@@ -109,11 +80,9 @@ export const updateClassroom = async (req: any, res: Response, next: NextFunctio
 
     const id = req.params.id;
 
-    const classroomToUpdate = await classroomOdm.getClassroomById(id);
-    if (classroomToUpdate) {
-      Object.assign(classroomToUpdate, req.body);
-      const classroomSaved = await classroomToUpdate.save();
-      res.json(classroomSaved);
+    const subjectDeleted = await subjectOdm.deleteSubject(id);
+    if (subjectDeleted) {
+      res.json(subjectDeleted);
     } else {
       res.status(404).json({});
     }
@@ -122,10 +91,33 @@ export const updateClassroom = async (req: any, res: Response, next: NextFunctio
   }
 };
 
-export const classroomService = {
-  getClassrooms,
-  getClassroomById,
-  createClassroom,
-  deleteClassroom,
-  updateClassroom,
+export const updateSubject = async (req: any, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    // This action can only be performed by 🎖️ADMINS
+    if (req.user.role !== "ADMIN") {
+      res.status(401).json({ error: "⛔ Only Admins can perform this action." });
+      return;
+    }
+
+    const id = req.params.id;
+
+    const subjectToUpdate = await subjectOdm.getSubjectById(id);
+    if (subjectToUpdate) {
+      Object.assign(subjectToUpdate, req.body);
+      const subjectSaved = await subjectToUpdate.save();
+      res.json(subjectSaved);
+    } else {
+      res.status(404).json({});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const subjectService = {
+  getSubjects,
+  getSubjectById,
+  createSubject,
+  deleteSubject,
+  updateSubject,
 };

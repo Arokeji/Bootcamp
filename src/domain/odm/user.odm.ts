@@ -20,6 +20,10 @@ const getUserByEmailWithPassword = async (email: string): Promise<Document<IUser
   return user;
 };
 
+const getStudentsByClassroomId = async (classroomId: string): Promise<IUser[]> => {
+  return await User.find({ classroom: classroomId });
+};
+
 const createUser = async (userData: IUserCreate): Promise<Document<IUser>> => {
   const user = new User(userData);
   const document: Document<IUser> = (await user.save()) as any;
@@ -42,6 +46,7 @@ export const userOdm = {
   getUserCount,
   getUserById,
   getUserByEmailWithPassword,
+  getStudentsByClassroomId,
   createUser,
   deleteUser,
   updateUser,
