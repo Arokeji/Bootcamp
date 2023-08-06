@@ -100,13 +100,6 @@ describe("User controller", () => {
     // Logged as Admin | Returns 200
     const adminResponse = await request(app).get("/user").set("Authorization", `Bearer ${adminToken}`).expect(200);
     expect(adminResponse.body.data?.length).toBeDefined();
-
-    // expect(response.body.data).toBeDefined();
-    // expect(response.body.data.length).toBe(1);
-    // expect(response.body.data[0].email).toBe(userMock.email);
-    // expect(response.body.totalItems).toBe(1);
-    // expect(response.body.totalPages).toBe(1);
-    // expect(response.body.currentPage).toBe(1);
   });
 
   it("GET /user/:id - Returning a specific user.", async () => {
@@ -152,26 +145,3 @@ describe("User controller", () => {
     expect(adminResponse.body._id).toBe(createdUserId);
   });
 });
-
-//   it("PUT /user/id - Should not modify user when no token present", async () => {
-//     const updatedData = {
-//       lastName: "Cuadrado",
-//     };
-
-//     const response = await request(app).put(`/user/${userId}`).send(updatedData).expect(401);
-
-//     expect(response.body.error).toBe("No tienes autorización para realizar esta operación");
-//   });
-
-//   it("DELETE /user/id -  Do not delete user whe no token is present", async () => {
-//     const response = await request(app).delete(`/user/${userId}`).expect(401);
-
-//     expect(response.body.error).toBe("No tienes autorización para realizar esta operación");
-//   });
-
-//   it("DELETE /user/id -  Deletes user when token is OK", async () => {
-//     const response = await request(app).delete(`/user/${userId}`).set("Authorization", `Bearer ${token}`).expect(200);
-
-//     expect(response.body._id).toBe(userId);
-//   });
-// });
