@@ -7,12 +7,12 @@ Project based on:
 
 Included in this project:
 - Express
+- Mongoose
+- Supertest
 - Swagger
 - Bcrypt
 - Cors
 - Dotenv
 - JsonWebToken
-- Mongoose
-- TypeOrm
 - Validator
 - Eslint & Prettier
